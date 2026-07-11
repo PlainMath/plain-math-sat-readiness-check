@@ -170,60 +170,72 @@ export const questions: Question[] = [
       "Good hard-module diagnostic. Choosing -5 suggests the student copied the minimum value instead of solving for the parameter.",
   },
   {
-    id: "q07-quadratic-minimum",
+    id: "q07-quadratic-roots-minimum-gap",
     questionText:
-      "The function f is defined by f(x) = x² - 8x + 19. What is the minimum value of f(x)?",
+      "The quadratic function f is defined by f(x) = (x - r)(x - s), where r and s are real constants. The minimum value of f is -25. What is |r - s|?",
     choices: [
-      { id: "A", text: "3" },
-      { id: "B", text: "4" },
-      { id: "C", text: "8" },
-      { id: "D", text: "19" },
+      { id: "A", text: "5" },
+      { id: "B", text: "20" },
+      { id: "C", text: "25" },
+      { id: "D", text: "10" },
     ],
-    correctAnswer: "A",
+    correctAnswer: "D",
     domain: "Advanced Math",
-    skill: "Quadratic minimum and vertex form",
-    difficulty: "medium",
-    estimatedTimeSec: 85,
-    desmosOpportunity: true,
-    trapType: "Choosing the x-coordinate of the vertex instead of the minimum value",
-    trapAnswer: "B",
-    leakTags: ["desmos_strategy", "hard_module_readiness", "adaptive_traps"],
-    explanationStudent:
-      "Rewrite x² - 8x + 19 as (x - 4)² + 3. The minimum value is 3.",
-    explanationParent:
-      "This checks whether the student understands the difference between the x-coordinate of the vertex and the minimum y-value.",
-    fastRouteSummary:
-      "Complete the square or graph in Desmos and read the minimum y-value.",
-    tutorNote:
-      "Strong Desmos and quadratic-structure diagnostic. Choosing 4 suggests the student found the vertex x-value but answered the wrong quantity.",
-  },
-  {
-    id: "q08-similar-triangles-area-scale",
-    questionText:
-      "Triangle A is similar to Triangle B. A side of Triangle A has length 6, and the corresponding side of Triangle B has length 15. If the area of Triangle A is 20, what is the area of Triangle B?",
-    choices: [
-      { id: "A", text: "50" },
-      { id: "B", text: "80" },
-      { id: "C", text: "125" },
-      { id: "D", text: "250" },
-    ],
-    correctAnswer: "C",
-    domain: "Geometry and Trigonometry",
-    skill: "Area scale factor in similar figures",
+    skill: "Connecting roots, vertex, and minimum value",
     difficulty: "hard",
     estimatedTimeSec: 95,
-    desmosOpportunity: false,
-    trapType: "Using linear scale factor instead of area scale factor",
-    trapAnswer: "A",
-    leakTags: ["geometry_gap", "adaptive_traps", "hard_module_readiness"],
+    desmosOpportunity: true,
+    trapType:
+      "Using the magnitude of the minimum value as the distance between the roots",
+    trapAnswer: "C",
+    leakTags: [
+      "hard_module_readiness",
+      "desmos_strategy",
+      "adaptive_traps",
+      "algebra_speed",
+    ],
     explanationStudent:
-      "The side length scale factor from Triangle A to Triangle B is 15/6 = 2.5. Areas scale by the square of the side factor, so the area scale factor is 2.5² = 6.25. The area of Triangle B is 20 × 6.25 = 125.",
+      "The vertex is halfway between the roots. At x = (r + s)/2, the two factors are opposites, each with magnitude |r - s|/2. Therefore, the minimum value is -(r - s)^2/4. Since -(r - s)^2/4 = -25, (r - s)^2 = 100, so |r - s| = 10.",
     explanationParent:
-      "This checks a common harder geometry trap: areas do not scale the same way side lengths do.",
+      "This checks whether the student can connect the roots of a quadratic to its vertex and minimum value instead of relying on a memorized completing-the-square routine.",
     fastRouteSummary:
-      "Find the side scale factor, square it, then multiply the original area.",
+      "For a monic quadratic written from its roots, minimum value = -(distance between roots)^2/4.",
     tutorNote:
-      "Good hard geometry diagnostic. If missed, review similarity, scale factors, and area scaling.",
+      "A strong harder-module question because the required relationship is not stated directly. Choosing 25 suggests the student confused the minimum value with the distance between the roots.",
+  },
+  {
+    id: "q08-circle-tangent-diagonal-point",
+    questionText:
+      "In the xy-plane, a circle has center (4, -2) and is tangent to the line x = 10. The point (4 + a, -2 + a) lies on the circle, where a > 0. What is the value of a?",
+    choices: [
+      { id: "A", text: "3√2" },
+      { id: "B", text: "3" },
+      { id: "C", text: "6" },
+      { id: "D", text: "6√2" },
+    ],
+    correctAnswer: "A",
+    domain: "Geometry and Trigonometry",
+    skill: "Circle radius and coordinate distance",
+    difficulty: "hard",
+    estimatedTimeSec: 90,
+    desmosOpportunity: true,
+    trapType:
+      "Treating the two equal coordinate changes as one horizontal distance",
+    trapAnswer: "B",
+    leakTags: [
+      "geometry_gap",
+      "adaptive_traps",
+      "hard_module_readiness",
+      "desmos_strategy",
+    ],
+    explanationStudent:
+      "Because the circle is tangent to x = 10 and its center has x-coordinate 4, the radius is 10 - 4 = 6. From the center to the point (4 + a, -2 + a), both the horizontal and vertical changes are a. Therefore, a^2 + a^2 = 6^2. Thus 2a^2 = 36, a^2 = 18, and since a > 0, a = 3√2.",
+    explanationParent:
+      "This checks whether the student can combine a tangent-line radius with the distance formula in a coordinate geometry setting.",
+    fastRouteSummary:
+      "Find the radius from the tangent line, then use a^2 + a^2 = r^2.",
+    tutorNote:
+      "This is harder than a direct circle-equation question because the radius and the point relationship must both be inferred.",
   },
   {
     id: "q09-mean-median-trap",
@@ -254,32 +266,39 @@ export const questions: Question[] = [
       "A student who chooses 20 is solving but not answering. That is a classic SAT trap pattern.",
   },
   {
-    id: "q10-contextual-linear-model-delivery",
+    id: "q10-contextual-linear-model-membership",
     questionText:
-      "A delivery company charges a fixed booking fee plus a constant amount per mile. A 14-mile delivery costs $51, and a 38-mile delivery costs $99. At the same rates, how many miles is a delivery that costs $137?",
+      "A community center charges a one-time registration fee and a constant monthly membership fee. One family paid a total of $286 for 4 months, and another family paid a total of $442 for 7 months. Families that prepay for 12 months receive a 10% discount on the entire cost after the registration fee and monthly charges are combined. How much would a 12-month prepayment cost after the discount?",
     choices: [
-      { id: "A", text: "45" },
-      { id: "B", text: "52" },
-      { id: "C", text: "57" },
-      { id: "D", text: "68" },
+      { id: "A", text: "$561.60" },
+      { id: "B", text: "$639.60" },
+      { id: "C", text: "$702.00" },
+      { id: "D", text: "$631.80" },
     ],
-    correctAnswer: "C",
+    correctAnswer: "D",
     domain: "Problem-Solving and Data Analysis",
-    skill: "Building and using a contextual linear model",
+    skill: "Building and applying a contextual linear model",
     difficulty: "hard",
     estimatedTimeSec: 110,
     desmosOpportunity: true,
-    trapType: "Ignoring the fixed fee or using the total cost as the per-mile rate",
-    trapAnswer: "D",
-    leakTags: ["data_analysis_gap", "desmos_strategy", "adaptive_traps", "algebra_speed"],
+    trapType:
+      "Applying the discount only to the monthly charges instead of the entire cost",
+    trapAnswer: "B",
+    leakTags: [
+      "data_analysis_gap",
+      "desmos_strategy",
+      "adaptive_traps",
+      "algebra_speed",
+      "hard_module_readiness",
+    ],
     explanationStudent:
-      "The cost increases from $51 to $99 when the distance increases from 14 to 38 miles. That is $48 over 24 miles, so the rate is $2 per mile. The fixed fee is 51 - 2(14) = 23. For a $137 delivery, solve 137 = 23 + 2m, so 2m = 114 and m = 57.",
+      "The cost increases by $442 - $286 = $156 over 7 - 4 = 3 additional months, so the monthly fee is $52. The registration fee is $286 - 4($52) = $78. The full 12-month cost is $78 + 12($52) = $702. Applying the 10% discount gives 0.90($702) = $631.80.",
     explanationParent:
-      "This checks whether the student can translate a longer word problem into a linear model with a fixed fee and a per-mile rate.",
+      "This checks whether the student can extract a rate and fixed fee from two real-world data points, extend the model, and then correctly apply a percent adjustment.",
     fastRouteSummary:
-      "Find the slope from the two deliveries, find the fixed fee, then solve the model backward for miles.",
+      "Find the monthly rate from the change in cost, recover the fixed fee, calculate 12 months, then multiply the entire total by 0.90.",
     tutorNote:
-      "This is a better SAT-style applied word problem. It tests setup, units, rate interpretation, and reverse use of a model.",
+      "This is a longer applied SAT-style problem. It tests model construction, units, fixed-versus-variable cost, and correct interpretation of the discount.",
   },
   {
     id: "q11-system-parameter-no-solution",
