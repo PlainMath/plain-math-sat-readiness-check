@@ -148,10 +148,12 @@ function getSkillScores(
 function getFlaggedStatus(result: QuestionResult): FlaggedQuestionDraft["status"] {
   if (result.isUnanswered) return "Unanswered";
   if (result.selectedTrapAnswer && !result.isCorrect) return "Trap Selected";
-  if (result.desmosOpportunity && (!result.isCorrect || result.isSlow)) {
+  if (!result.isCorrect) return "Incorrect";
+
+  if (result.desmosOpportunity && result.isSlow) {
     return "Desmos Opportunity Missed";
   }
-  if (!result.isCorrect) return "Incorrect";
+
   return "Slow";
 }
 
@@ -170,6 +172,36 @@ function getPrimaryLeakFromSignals(signals: LeakTag[]): string {
   const ranked = [...leakTiePriority].find((tag) => signals.includes(tag));
 
   return ranked ? leakDisplayNames[ranked] : leakDisplayNames[signals[0]];
+}
+
+function getFlaggedLeakDetected(result: QuestionResult): string {
+  if (result.isUnanswered) return "Timing Control";
+
+  if (result.selectedTrapAnswer && !result.isCorrect) {
+    return "Trap Recognition";
+  }
+
+  if (!result.isCorrect && result.difficulty === "hard") {
+    return "Hard Module Readiness";
+  }
+
+  if (!result.isCorrect && result.domain === "Geometry and Trigonometry") {
+    return "Geometry Gap";
+  }
+
+  if (!result.isCorrect && result.domain === "Problem-Solving and Data Analysis") {
+    return "Data Analysis Gap";
+  }
+
+  if (result.desmosOpportunity && result.isSlow) {
+    return "Desmos Strategy";
+  }
+
+  if (result.isSlow) {
+    return "Timing Control";
+  }
+
+  return getPrimaryLeakFromSignals(result.leakSignalsGenerated);
 }
 
 function buildTutorAuditFocus(primaryLeak: LeakTag, secondaryLeak: LeakTag): string {
@@ -353,7 +385,7 @@ export function scoreDiagnostic(
       );
     })
     .map((result): FlaggedQuestionDraft => {
-      const leakDetected = getPrimaryLeakFromSignals(result.leakSignalsGenerated);
+      const leakDetected = getFlaggedLeakDetected(result);
 
       return {
         questionNumber: result.questionNumber,
