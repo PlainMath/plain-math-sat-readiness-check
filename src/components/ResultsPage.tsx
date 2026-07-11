@@ -1,4 +1,5 @@
 import { AUDIT_BOOKING_URL } from "../lib/constants";
+import { getSkillNarrative } from "../data/skillNarratives";
 import { resultTemplates } from "../data/resultTemplates";
 import { submitAuditClick } from "../lib/submitAuditPacket";
 import type { SaveStatus, TutorAuditPacket } from "../lib/types";
@@ -15,45 +16,6 @@ type ResultsPageProps = {
   onRetrySave: () => void;
 };
 
-const skillCopy = {
-  algebraSpeed: {
-    title: "Algebra Speed",
-    whatWeSaw: "Your child’s algebra work may be taking longer than the test allows.",
-    whatItMeans: "The issue may be algebra fluency, not effort.",
-    whyItMatters: "Slow algebra reduces time available for harder questions.",
-  },
-  desmosStrategy: {
-    title: "Desmos Strategy",
-    whatWeSaw: "Some calculator-friendly questions were missed or took too long.",
-    whatItMeans: "Your child may not be using the fastest Digital SAT route.",
-    whyItMatters: "Desmos can turn some long algebra problems into short verification problems.",
-  },
-  timingControl: {
-    title: "Timing Control",
-    whatWeSaw: "Several questions crossed the expected time limit.",
-    whatItMeans: "Pacing may be making the score less consistent.",
-    whyItMatters: "A student can lose points from slow routes even when the math is familiar.",
-  },
-  trapRecognition: {
-    title: "Trap Recognition",
-    whatWeSaw: "Some selected answers matched common SAT-style trap patterns.",
-    whatItMeans: "Your child may be solving correctly but answering the wrong target.",
-    whyItMatters: "Trap points are expensive because they often come from questions the student could have solved.",
-  },
-  foundationStrength: {
-    title: "Foundation Strength",
-    whatWeSaw: "Some baseline skills may need repair.",
-    whatItMeans: "Harder practice may not help until the core routine is stable.",
-    whyItMatters: "A 700-level score depends on fast, reliable foundations.",
-  },
-  hardModuleReadiness: {
-    title: "Hard Module Readiness",
-    whatWeSaw: "Harder questions were less consistent.",
-    whatItMeans: "Your child may need more targeted work before harder adaptive questions become reliable.",
-    whyItMatters: "The jump from the 600s to 700 often depends on handling harder-module patterns with less hesitation.",
-  },
-};
-
 export function ResultsPage({
   packet,
   saveStatus,
@@ -62,6 +24,15 @@ export function ResultsPage({
 }: ResultsPageProps) {
   const result = packet.result;
   const primaryTemplate = resultTemplates[result.primaryLeak];
+
+  const skillBreakdowns = [
+    { key: "algebraSpeed", score: result.skillScores.algebraSpeed },
+    { key: "desmosStrategy", score: result.skillScores.desmosStrategy },
+    { key: "timingControl", score: result.skillScores.timingControl },
+    { key: "trapRecognition", score: result.skillScores.trapRecognition },
+    { key: "foundationStrength", score: result.skillScores.foundationStrength },
+    { key: "hardModuleReadiness", score: result.skillScores.hardModuleReadiness },
+  ] as const;
 
   function handleAuditClick() {
     void submitAuditClick({
@@ -143,30 +114,13 @@ export function ResultsPage({
           </h2>
 
           <div className="mt-5 grid gap-5 md:grid-cols-2">
-            <BreakdownCard
-              {...skillCopy.algebraSpeed}
-              score={result.skillScores.algebraSpeed}
-            />
-            <BreakdownCard
-              {...skillCopy.desmosStrategy}
-              score={result.skillScores.desmosStrategy}
-            />
-            <BreakdownCard
-              {...skillCopy.timingControl}
-              score={result.skillScores.timingControl}
-            />
-            <BreakdownCard
-              {...skillCopy.trapRecognition}
-              score={result.skillScores.trapRecognition}
-            />
-            <BreakdownCard
-              {...skillCopy.foundationStrength}
-              score={result.skillScores.foundationStrength}
-            />
-            <BreakdownCard
-              {...skillCopy.hardModuleReadiness}
-              score={result.skillScores.hardModuleReadiness}
-            />
+            {skillBreakdowns.map((item) => (
+              <BreakdownCard
+                key={item.key}
+                {...getSkillNarrative(item.key, item.score)}
+                score={item.score}
+              />
+            ))}
           </div>
         </section>
 
