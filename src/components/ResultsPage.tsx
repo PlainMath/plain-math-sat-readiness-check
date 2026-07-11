@@ -25,6 +25,35 @@ export function ResultsPage({
   const result = packet.result;
   const primaryTemplate = resultTemplates[result.primaryLeak];
 
+  const isCleanStrongResult =
+    result.readinessScore >= 90 &&
+    result.totals.correctAnswers === result.totals.totalQuestions &&
+    result.totals.flaggedQuestionsCount === 0 &&
+    result.totals.slowQuestionsCount === 0 &&
+    result.totals.trapAnswersSelectedCount === 0 &&
+    result.totals.incorrectAnswers === 0 &&
+    result.totals.unansweredQuestions === 0;
+
+  const mainSignalLabel = isCleanStrongResult
+    ? "Readiness signal"
+    : "Main score leak detected";
+
+  const mainSignalTitle = isCleanStrongResult
+    ? "No major leak detected"
+    : result.primaryLeakDisplayName;
+
+  const mainSignalCopy = isCleanStrongResult
+    ? "This 15-minute check did not detect a meaningful score leak. Accuracy, pacing, Desmos strategy, trap recognition, foundations, and harder-module execution all showed a strong signal in this sample."
+    : primaryTemplate.mainCopy;
+
+  const secondarySignalLabel = isCleanStrongResult
+    ? "Recommended next focus"
+    : "Secondary leak";
+
+  const secondarySignalTitle = isCleanStrongResult
+    ? "Precision work and full-length confirmation"
+    : result.secondaryLeakDisplayName;
+
   const skillBreakdowns = [
     { key: "algebraSpeed", score: result.skillScores.algebraSpeed },
     { key: "desmosStrategy", score: result.skillScores.desmosStrategy },
@@ -88,21 +117,21 @@ export function ResultsPage({
 
           <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 shadow-2xl">
             <div className="text-sm uppercase tracking-[0.22em] text-[#d7bd7a]">
-              Main score leak detected
+              {mainSignalLabel}
             </div>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-              {result.primaryLeakDisplayName}
+              {mainSignalTitle}
             </h2>
 
             <p className="mt-4 leading-7 text-slate-300">
-              {primaryTemplate.mainCopy}
+              {mainSignalCopy}
             </p>
 
             <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
-              <div className="text-sm text-slate-500">Secondary leak</div>
+              <div className="text-sm text-slate-500">{secondarySignalLabel}</div>
               <div className="mt-1 text-lg font-semibold text-white">
-                {result.secondaryLeakDisplayName}
+                {secondarySignalTitle}
               </div>
             </div>
           </section>
