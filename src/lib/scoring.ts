@@ -56,15 +56,25 @@ function addLeakPoint(
 }
 
 function rankLeaks(leakPoints: Record<LeakTag, number>): [LeakTag, LeakTag] {
-  const ranked = [...leakTiePriority].sort((a, b) => {
-    const pointDiff = leakPoints[b] - leakPoints[a];
+  const ranked = [...leakTiePriority]
+    .filter((tag) => leakPoints[tag] > 0)
+    .sort((a, b) => {
+      const pointDiff = leakPoints[b] - leakPoints[a];
 
-    if (pointDiff !== 0) {
-      return pointDiff;
-    }
+      if (pointDiff !== 0) {
+        return pointDiff;
+      }
 
-    return leakTiePriority.indexOf(a) - leakTiePriority.indexOf(b);
-  });
+      return leakTiePriority.indexOf(a) - leakTiePriority.indexOf(b);
+    });
+
+  if (ranked.length === 0) {
+    return ["timing_control", "timing_control"];
+  }
+
+  if (ranked.length === 1) {
+    return [ranked[0], ranked[0]];
+  }
 
   return [ranked[0], ranked[1]];
 }
@@ -107,6 +117,10 @@ function getSkillScores(
       result.leakTags.includes("foundation_gaps"),
   );
 
+  const foundationCorrect = foundationQuestions.filter(
+    (result) => result.isCorrect,
+  ).length;
+
   const foundationStrong = foundationQuestions.filter(
     (result) => result.isCorrect && !result.isSlow,
   ).length;
@@ -115,6 +129,10 @@ function getSkillScores(
     (result) =>
       result.difficulty === "hard" || result.domain === "Advanced Math",
   );
+
+  const hardCorrect = hardQuestions.filter(
+    (result) => result.isCorrect,
+  ).length;
 
   const hardStrong = hardQuestions.filter(
     (result) => result.isCorrect && !result.isSlow,
@@ -137,10 +155,12 @@ function getSkillScores(
             safePercent(trapCorrect, trapQuestions.length, 0) * 0.5,
     ),
     foundationStrength: roundScore(
-      safePercent(foundationStrong, foundationQuestions.length, 50),
+      safePercent(foundationCorrect, foundationQuestions.length, 50) * 0.75 +
+        safePercent(foundationStrong, foundationQuestions.length, 50) * 0.25,
     ),
     hardModuleReadiness: roundScore(
-      safePercent(hardStrong, hardQuestions.length, 50),
+      safePercent(hardCorrect, hardQuestions.length, 50) * 0.75 +
+        safePercent(hardStrong, hardQuestions.length, 50) * 0.25,
     ),
   };
 }
@@ -204,7 +224,14 @@ function getFlaggedLeakDetected(result: QuestionResult): string {
   return getPrimaryLeakFromSignals(result.leakSignalsGenerated);
 }
 
-function buildTutorAuditFocus(primaryLeak: LeakTag, secondaryLeak: LeakTag): string {
+function buildTutorAuditFocus(
+  primaryLeak: LeakTag,
+  secondaryLeak: LeakTag,
+): string {
+  if (primaryLeak === secondaryLeak) {
+    return `Focus on ${leakDisplayNames[primaryLeak]} first. Use the flagged questions to separate knowledge gaps from strategy gaps, timing leaks, and avoidable trap patterns.`;
+  }
+
   return `Focus on ${leakDisplayNames[primaryLeak]} first, with a secondary check on ${leakDisplayNames[secondaryLeak]}. Use the flagged questions to separate knowledge gaps from strategy gaps, timing leaks, and avoidable trap patterns.`;
 }
 
@@ -425,7 +452,13 @@ export function scoreDiagnostic(
   };
 
   const skillScores = getSkillScores(questionResults);
-  const scoreInterpretation = getScoreInterpretation(readinessScore);
+
+  const scoreInterpretation =
+    readinessScore >= 80 &&
+    primaryLeak === "timing_control" &&
+    leakPoints[primaryLeak] > 0
+      ? "Strong accuracy signal, but pacing still needs to become more consistent."
+      : getScoreInterpretation(readinessScore);
 
   return {
     readinessScore,

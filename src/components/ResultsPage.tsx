@@ -46,13 +46,20 @@ export function ResultsPage({
     ? "This 15-minute check did not detect a meaningful score leak. Accuracy, pacing, Desmos strategy, trap recognition, foundations, and harder-module execution all showed a strong signal in this sample."
     : primaryTemplate.mainCopy;
 
+  const hasDistinctSecondaryLeak =
+    result.secondaryLeak !== result.primaryLeak;
+
   const secondarySignalLabel = isCleanStrongResult
     ? "Recommended next focus"
-    : "Secondary leak";
+    : hasDistinctSecondaryLeak
+      ? "Secondary leak"
+      : "Secondary signal";
 
   const secondarySignalTitle = isCleanStrongResult
     ? "Precision work and full-length confirmation"
-    : result.secondaryLeakDisplayName;
+    : hasDistinctSecondaryLeak
+      ? result.secondaryLeakDisplayName
+      : "No separate secondary leak detected";
 
   const skillBreakdowns = [
     { key: "algebraSpeed", score: result.skillScores.algebraSpeed },
