@@ -8,6 +8,7 @@ import { BreakdownCard } from "./BreakdownCard";
 import { QuestionReview } from "./QuestionReview";
 import { SaveWarning } from "./SaveWarning";
 import { ScoreCard } from "./ScoreCard";
+import { trackMetaCustomEvent } from "../lib/metaPixel";
 
 type ResultsPageProps = {
   packet: TutorAuditPacket;
@@ -71,11 +72,13 @@ export function ResultsPage({
   ] as const;
 
   function handleAuditClick() {
-    void submitAuditClick({
-      reportId: packet.reportId,
-      clickedAt: new Date().toISOString(),
-    });
-  }
+  trackMetaCustomEvent("AuditClick");
+
+  void submitAuditClick({
+    reportId: packet.reportId,
+    clickedAt: new Date().toISOString(),
+  });
+}
 
   return (
     <main className="min-h-screen px-5 py-6 text-white md:py-10">

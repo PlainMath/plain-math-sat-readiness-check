@@ -8,6 +8,7 @@ import { questions } from "./data/questions";
 import { buildTutorAuditPacket, generateReportId } from "./lib/reportBuilder";
 import { scoreDiagnostic } from "./lib/scoring";
 import { submitAuditPacket } from "./lib/submitAuditPacket";
+import { trackMetaCustomEvent } from "./lib/metaPixel";
 import type {
   IntakeData,
   QuestionResponse,
@@ -48,15 +49,21 @@ export default function App() {
   }
 
   function handleIntakeSubmit(data: IntakeData) {
-    setIntake(data);
-    setStep("test");
-  }
+  setIntake(data);
+
+  trackMetaCustomEvent("DiagnosticStart");
+
+  setStep("test");
+}
 
   async function handleTestComplete(responses: QuestionResponse[]) {
     if (!intake) {
       setStep("intake");
       return;
     }
+    trackMetaCustomEvent("DiagnosticComplete", {
+  question_count: responses.length,
+});
 
     setStep("loading");
 
@@ -80,6 +87,7 @@ export default function App() {
     ]);
 
     setStep("results");
+    trackMetaCustomEvent("ReportView");
   }
 
   async function handleRetrySave() {
