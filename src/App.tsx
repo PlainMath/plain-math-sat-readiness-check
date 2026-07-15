@@ -52,6 +52,7 @@ export default function App() {
   setIntake(data);
 
   trackMetaCustomEvent("DiagnosticStart");
+  window.fbq?.("track", "CompleteRegistration");
 
   setStep("test");
 }
